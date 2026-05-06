@@ -12,8 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('queue_entries', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('service_id')->constrained('services')->cascadeOnDelete();
+            $table->foreignUuid('customer_id')->constrained('users')->cascadeOnDelete();
+
+            $table->string('token', 10); // store token e.g. "A012"
+            $table->unsignedInteger('position');
+            $table->enum('status', ['waiting', 'called', 'serving', 'done', 'skipped'])->default('waiting');
+            $table->timestamp('joined_at');
+            $table->timestamp('served_at')->nullable();
             $table->timestamps();
+            // Speed up queries that filter by service + status
+            $table->index(['service_id', 'status']);
         });
     }
 
