@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Appointment;
+use App\Models\QueueEntry;
+use App\Models\StaffAvailability;
 
 class User extends Authenticatable
 {
