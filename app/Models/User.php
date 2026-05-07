@@ -88,4 +88,5 @@ class User extends Authenticatable
     {
         return $this->hasMany(StaffAvailability::class, 'staff_id');
     }
+    
 }
