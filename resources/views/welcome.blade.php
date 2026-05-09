@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
-
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
@@ -269,7 +269,9 @@
                 </div>
             </main>
         </div>
-
+<div class="bg-blue-500 text-white p-4">
+    This should be blue with white text
+</div>
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif

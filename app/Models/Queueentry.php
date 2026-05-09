@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\Service;
 use App\Models\User;
 
@@ -81,7 +82,7 @@ class QueueEntry extends Model
      * Only waiting entries, ordered by position.
      * Usage: QueueEntry::waiting()->get()
      */
-    public function scopeWaiting($query)
+    public function scopeWaiting(Builder $query)
     {
         return $query->where('status', 'waiting')->orderBy('position');
     }
@@ -89,7 +90,7 @@ class QueueEntry extends Model
     /**
      * Active entries (waiting + called + serving).
      */
-    public function scopeActive($query)
+    public function scopeActive(Builder $query)
     {
         return $query->whereIn('status', ['waiting', 'called', 'serving'])
                      ->orderBy('position');

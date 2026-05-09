@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\Service;
 use App\Models\User;
 
@@ -70,7 +71,7 @@ class Appointment extends Model
      * Filter by a specific status.
      * Usage: Appointment::status('confirmed')->get()
      */
-    public function scopeStatus($query, string $status)
+    public function scopeStatus(Builder $query, string $status)
     {
         return $query->where('status', $status);
     }
@@ -78,7 +79,7 @@ class Appointment extends Model
     /**
      * Appointments scheduled for today.
      */
-    public function scopeToday($query)
+    public function scopeToday(Builder $query)
     {
         return $query->whereDate('scheduled_at', today());
     }
@@ -86,7 +87,7 @@ class Appointment extends Model
     /**
      * Appointments scheduled for a specific date.
      */
-    public function scopeOnDate($query, string $date)
+    public function scopeOnDate(Builder $query, string $date)
     {
         return $query->whereDate('scheduled_at', $date);
     }
@@ -94,7 +95,7 @@ class Appointment extends Model
     /**
      * Upcoming (future + not cancelled/done).
      */
-    public function scopeUpcoming($query)
+    public function scopeUpcoming(Builder $query)
     {
         return $query->where('scheduled_at', '>', now())
                      ->whereNotIn('status', ['cancelled', 'done']);
