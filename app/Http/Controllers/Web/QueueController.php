@@ -8,6 +8,7 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * WEB QueueController
@@ -59,15 +60,15 @@ class QueueController extends Controller
             ->get();
 
         // Find this customer's own entry (null if not in queue or not logged in)
-        $myEntry = auth()->check()
-            ? $waiting->firstWhere('customer_id', auth()->id())
+        $myEntry = Auth::check()
+            ? $waiting->firstWhere('customer_id', Auth::id())
             : null;
 
         $estimatedWait = $myEntry
             ? ($myEntry->position - 1) * $service->duration_minutes
             : null;
 
-        return view('web.queue.show', compact('service', 'waiting', 'myEntry', 'estimatedWait'));
+        return view('queue.show', compact('service', 'waiting', 'myEntry', 'estimatedWait'));
     }
 
     /**
@@ -92,7 +93,7 @@ class QueueController extends Controller
 
         // Prevent duplicate entries
         $alreadyInQueue = QueueEntry::where('service_id', $service->id)
-            ->where('customer_id', auth()->id())
+            ->where('customer_id', Auth::id())
             ->whereIn('status', ['waiting', 'called', 'serving'])
             ->exists();
 
@@ -110,7 +111,7 @@ class QueueController extends Controller
 
             $entry = QueueEntry::create([
                 'service_id'  => $service->id,
-                'customer_id' => auth()->id(),
+                'customer_id' => Auth::id(),
                 'token'       => $token,
                 'position'    => $position,
                 'status'      => 'waiting',
@@ -130,7 +131,7 @@ class QueueController extends Controller
         });
 
         return redirect()
-            ->route('web.queue.show', $service)
+            ->route('queue.show', $service)
             ->with('success', "You joined the queue! Your token is {$entry->token}. You are #$entry->position in line.");
     }
 
@@ -143,7 +144,7 @@ class QueueController extends Controller
     public function leave(Service $service)
     {
         $entry = QueueEntry::where('service_id', $service->id)
-            ->where('customer_id', auth()->id())
+            ->where('customer_id', Auth::id())
             ->where('status', 'waiting')
             ->firstOrFail(); // 404 if not found
 
@@ -162,7 +163,7 @@ class QueueController extends Controller
         });
 
         return redirect()
-            ->route('web.queue.show', $service)
+            ->route('queue.show', $service)
             ->with('success', 'You have left the queue.');
     }
 
@@ -176,7 +177,7 @@ class QueueController extends Controller
     public function advance(Service $service)
     {
         abort_unless(
-            auth()->user()->isStaff() || auth()->user()->isAdmin(),
+            Auth::user()->isStaff() || Auth::user()->isAdmin(),
             403,
             'Staff only.'
         );
@@ -207,7 +208,7 @@ class QueueController extends Controller
         });
 
         return redirect()
-            ->route('web.queue.show', $service)
+            ->route('queue.show', $service)
             ->with('success', "Token {$next->token} — {$next->customer->name} has been called.");
     }
 
@@ -220,7 +221,7 @@ class QueueController extends Controller
     public function markServed(QueueEntry $entry)
     {
         abort_unless(
-            auth()->user()->isStaff() || auth()->user()->isAdmin(),
+            Auth::user()->isStaff() || Auth::user()->isAdmin(),
             403
         );
 

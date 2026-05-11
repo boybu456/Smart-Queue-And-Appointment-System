@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\Service;
 use App\Models\User;
 
+/** 
+ * @mixin \Eloquent
+ */
 class Appointment extends Model
 {
     use HasFactory, HasUuids;

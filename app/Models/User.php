@@ -12,6 +12,9 @@ use App\Models\Appointment;
 use App\Models\QueueEntry;
 use App\Models\StaffAvailability;
 
+/** 
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasUuids, Notifiable;
